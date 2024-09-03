@@ -12,7 +12,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { Express, Response } from 'express';
+import { Response } from 'express';
+import { Multer } from 'multer'; // Import the Multer type
 
 @Controller('chats/:chatId/files')
 export class FileController {
@@ -32,7 +33,7 @@ export class FileController {
   )
   async uploadFile(
     @Param('chatId') chatId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Multer.File, // Use Multer.File type here
   ) {
     return this.fileService.uploadFile(chatId, file);
   }

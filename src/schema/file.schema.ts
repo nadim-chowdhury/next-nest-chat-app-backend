@@ -5,6 +5,8 @@ export type FileDocument = File & Document;
 
 @Schema()
 export class File {
+  _id: any;
+
   @Prop({ required: true })
   filename: string;
 

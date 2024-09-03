@@ -1,12 +1,14 @@
 import {
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
   WebSocketServer,
+  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ChatService } from './chat.service';
+import { SendMessageDto } from './dto/send-message.dto';
 
 @WebSocketGateway()
 export class ChatGateway
@@ -14,7 +16,13 @@ export class ChatGateway
 {
   @WebSocketServer() server: Server;
 
-  handleConnection(client: Socket, ...args: any[]) {
+  constructor(private readonly chatService: ChatService) {}
+
+  afterInit(server: Server) {
+    console.log('WebSocket server initialized');
+  }
+
+  handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
   }
 
@@ -23,7 +31,22 @@ export class ChatGateway
   }
 
   @SubscribeMessage('sendMessage')
-  handleMessage(client: Socket, payload: any): void {
-    this.server.emit('receiveMessage', payload);
+  async handleMessage(
+    client: Socket,
+    payload: { chatId: string; userId: string; content: string },
+  ) {
+    const message: SendMessageDto = { content: payload.content };
+    const chat = await this.chatService.sendMessage(
+      payload.chatId,
+      payload.userId,
+      message,
+    );
+    this.server.to(payload.chatId).emit('receiveMessage', chat);
+  }
+
+  @SubscribeMessage('joinChat')
+  handleJoinChat(client: Socket, chatId: string) {
+    client.join(chatId);
+    console.log(`Client ${client.id} joined chat ${chatId}`);
   }
 }

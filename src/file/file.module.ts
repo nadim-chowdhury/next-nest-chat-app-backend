@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
-import { File, FileSchema } from '../schemas/file.schema';
-import { Chat, ChatSchema } from '../schemas/chat.schema';
+import { File, FileSchema } from 'src/schema/file.schema';
+import { Chat, ChatSchema } from 'src/schema/chat.schema';
+// import { File, FileSchema } from '../schemas/file.schema';
+// import { Chat, ChatSchema } from '../schemas/chat.schema';
 
 @Module({
   imports: [
